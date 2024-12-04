@@ -12,6 +12,17 @@ BASE_URL = "https://api.ebird.org/v2/data/obs/"
 
 # Function to fetch bird observation data and save to a CSV file
 def fetch_and_save_bird_data(api_key, region_code, max_results, filename='bird_data.csv'):
+    """
+            Grabs bird data from the eBird API for the given region and saves it to a CSV file.
+
+            - `api_key`: EBird API token.
+            - `region_code`: Which region are we looking at? (e.g., 'US-NY' for New York)
+            - `max_results`: How many observations do you want to fetch?
+            - `filename`: Where should we save the results? Default is 'bird_data.csv'.
+
+            Returns:
+                A pandas DataFrame with the fetched bird observation data, or an empty one if there was an issue.
+            """
     headers = {"X-eBirdApiToken": api_key}
     params = {"maxResults": max_results}
     url = f"{BASE_URL}{region_code}/recent"
@@ -33,11 +44,29 @@ def fetch_and_save_bird_data(api_key, region_code, max_results, filename='bird_d
 
 # Function to read bird observation data from a CSV file
 def read_bird_data_from_file(filename='bird_data.csv'):
+    """
+           Reads bird data from a CSV file.
+
+           - `filename`: The name of the file that want to be loaded. Default is 'bird_data.csv'.
+
+           Returns:
+               A pandas DataFrame with the loaded bird data.
+           """
     return pd.read_csv(filename)
 
 
 # Function to calculate KPIs
 def calculate_kpis(df):
+    """
+            Analyzes bird data to give you an overview of the birds.
+
+            - `df`: The bird data as a pandas DataFrame.
+
+            Returns:
+                A dictionary with some interesting stats like:
+                - Total unique species observed
+                - Average, max, and min counts per observation
+            """
     total_species = df["comName"].nunique() if "comName" in df.columns else 0
     avg_count = df["howMany"].mean() if "howMany" in df.columns else 0
     max_count = df["howMany"].max() if "howMany" in df.columns else 0
@@ -52,6 +81,14 @@ def calculate_kpis(df):
 
 # Create a bar chart to visualize the bird count by species
 def create_bar_chart(df):
+    """
+            Builds a bar chart to show the total bird count by species.
+
+            - `df`: The bird data as a DataFrame.
+
+            Returns:
+                A Plotly bar chart showing bird counts by species.
+            """
     species_count = df.groupby('comName')['howMany'].sum().fillna(0).reset_index(name='Total Count')
     # Rename 'comName' to 'Common Name' for display purposes
     species_count.rename(columns={'comName': 'Common Name of Birds'}, inplace=True)
@@ -60,6 +97,14 @@ def create_bar_chart(df):
 
 # Create a pie chart to visualize the percentage distribution of bird counts by species
 def create_pie_chart(df):
+    """
+           Creates a pie chart to visualize what percentage of birds each species represents.
+
+           - `df`: The bird data as a pandas DataFrame.
+
+           Returns:
+               A Plotly pie chart with bird count percentages.
+           """
     # Group data by species name and sum their counts
     species_count = df.groupby('comName')['howMany'].sum().reset_index(name='Total Count')
 
@@ -84,6 +129,14 @@ def create_pie_chart(df):
 
 # Create a line chart to show the trend of bird observations over time
 def create_line_chart(df):
+    """
+            Draws a line chart to show how bird observations change over time.
+
+            - `df`: The bird data as a pandas DataFrame.
+
+            Returns:
+                A Plotly line chart showing trends over time, or an empty chart if there's no date data.
+            """
     if 'obsDt' in df.columns:
         df['obsDt'] = pd.to_datetime(df['obsDt'])
         df_grouped = df.groupby('obsDt').size().reset_index(name='Count')
@@ -94,6 +147,17 @@ def create_line_chart(df):
 
 # Function to update KPIs and charts based on user input
 def update_dashboard(region, max_results):
+    """
+            Refreshes the dashboard based on user inputs (region and number of observations).
+
+            - `region`: The region code (like 'US-NY') selected by the user.
+            - `max_results`: The number of observations to fetch.
+
+            Returns:
+                A bunch of updated data for the dashboard, including:
+                - Text for KPIs
+                - Updated figures for the charts
+            """
     # Fetch data based on selected region and number of observations (save to file)
     fetch_and_save_bird_data(API_KEY, region, max_results)
 
