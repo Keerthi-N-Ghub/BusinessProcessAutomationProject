@@ -41,7 +41,7 @@ def fetch_and_save_bird_data(api_key, region_code, max_results, filename='bird_d
         print(f"Error: Unable to fetch data ({response.status_code})")
         return pd.DataFrame()
 
-
+help(fetch_and_save_bird_data)
 # Function to read bird observation data from a CSV file
 def read_bird_data_from_file(filename='bird_data.csv'):
     """
@@ -53,18 +53,18 @@ def read_bird_data_from_file(filename='bird_data.csv'):
                A pandas DataFrame with the loaded bird data.
            """
     return pd.read_csv(filename)
-
+help(read_bird_data_from_file)
 
 # Function to calculate KPIs
 def calculate_kpis(df):
     """
-            Analyzes bird data to give you an overview of the birds.
+            Analyzes bird data to give an overview of the birds.
 
             - `df`: The bird data as a pandas DataFrame.
 
             Returns:
-                A dictionary with some interesting stats like:
-                - Total unique species observed
+                A dictionary with some stats like:
+                - Total species observed
                 - Average, max, and min counts per observation
             """
     total_species = df["comName"].nunique() if "comName" in df.columns else 0
@@ -77,7 +77,7 @@ def calculate_kpis(df):
         "Max Count per Observation": max_count,
         "Min Count per Observation": min_count,
     }
-
+help(calculate_kpis)
 
 # Create a bar chart to visualize the bird count by species
 def create_bar_chart(df):
@@ -93,7 +93,7 @@ def create_bar_chart(df):
     # Rename 'comName' to 'Common Name' for display purposes
     species_count.rename(columns={'comName': 'Common Name of Birds'}, inplace=True)
     return px.bar(species_count, x='Common Name of Birds', y='Total Count', title="Bird Count by Species")
-
+help(create_bar_chart)
 
 # Create a pie chart to visualize the percentage distribution of bird counts by species
 def create_pie_chart(df):
@@ -125,17 +125,17 @@ def create_pie_chart(df):
 
     # Create and return the pie chart with customized text info
     return px.pie(species_count, names='comName', values='Total Count', title="Bird Count Distribution by Species")
-
+help(create_pie_chart)
 
 # Create a line chart to show the trend of bird observations over time
 def create_line_chart(df):
     """
-            Draws a line chart to show how bird observations change over time.
+            Draws a line chart to show bird observations in a day.
 
             - `df`: The bird data as a pandas DataFrame.
 
             Returns:
-                A Plotly line chart showing trends over time, or an empty chart if there's no date data.
+                A Plotly line chart showing trends over day, or an empty chart if there's no date data.
             """
     if 'obsDt' in df.columns:
         df['obsDt'] = pd.to_datetime(df['obsDt'])
@@ -143,7 +143,7 @@ def create_line_chart(df):
         df_grouped.rename(columns={'obsDt': 'Observation Date'}, inplace=True)
         return px.line(df_grouped, x='Observation Date', y='Count', title="Trend of Bird Observations Over Time")
     return px.line()  # Return an empty line chart if no date data
-
+help(create_line_chart)
 
 # Function to update KPIs and charts based on user input
 def update_dashboard(region, max_results):
@@ -179,7 +179,7 @@ def update_dashboard(region, max_results):
     line_chart = create_line_chart(df)
 
     return total_species_text, avg_count_text, max_count_text, min_count_text, bar_chart, pie_chart, line_chart
-
+help(update_dashboard)
 
 # Initialize Dash app
 app = dash.Dash(__name__)
